@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)http://demo.sc.chinaz.com/Files/DownLoad/webjs1/201709/jiaoben5342/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>HTML5鼠标控制树镜动画特效 - 站长素材</title>
+
+<style>
+html,body {
+	margin:0;
+	padding:0;
+	overflow:hidden;
+	background-color:#000000
+}
+body {
+	height:100vh;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+.canvas {
+	display:block;
+	border-radius:50%;
+}
+.canvas-pattern {
+	display:none;
+}
+</style>
+
+<style type="text/css" adt="123"></style><script>//console.log('a')
+</script><script>doAdblock();
+function doAdblock(){
+    (function() {
+        function A() {}
+        A.prototype = {
+            rules: {
+                'pps_pps': {
+                    'find': /^http:\/\/www\.iqiyi\.com\/player\/cupid\/common\/pps_flvplay_s\.swf/,
+                    'replace': 'http://swf.adtchrome.com/pps_20140420.swf'
+                },
+                '17173_in':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/PreloaderFile(Customer)?\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173_in_20150522.swf"
+                },
+                '17173_out':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/PreloaderFileFirstpage\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173_out_20150522.swf"
+                },
+                '17173_live':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/Player_stream(_firstpage)?\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173_stream_20150522.swf"
+                },
+                '17173_live_out':{
+                    'find':/http:\/\/f\.v\.17173cdn\.com\/(\d+\/)?flash\/Player_stream_(custom)?Out\.swf/,
+                    'replace':"http://swf.adtchrome.com/17173.out.Live.swf"
+                }
+            },
+            _done: null,
+            get done() {
+                if(!this._done) {
+                    this._done = new Array();
+                }
+                return this._done;
+            },
+            addAnimations: function() {
+                var style = document.createElement('style');
+                style.type = 'text/css';
+                style.innerHTML = 'object,embed{\
+                -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;\
+                -ms-animation-duration:.001s;-ms-animation-name:playerInserted;\
+                -o-animation-duration:.001s;-o-animation-name:playerInserted;\
+                animation-duration:.001s;animation-name:playerInserted;}\
+                @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+                @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+                @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}\
+                @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}';
+                document.getElementsByTagName('head')[0].appendChild(style);
+            },
+            animationsHandler: function(e) {
+                if(e.animationName === 'playerInserted') {
+                    this.replace(e.target);
+                }
+            },
+            replace: function(elem) {
+                if (/http:\/\/v.youku.com\/v_show\/.*/.test(window.location.href)){
+                    var tag = document.getElementById("playerBox").getAttribute("player")
+                    if (tag == "adt"){
+                        console.log("adt adv")
+                        return;
+                    }
+                }
+                if(this.done.indexOf(elem) != -1) return;
+                this.done.push(elem);
+                var player = elem.data || elem.src;
+                if(!player) return;
+                var i, find, replace = false;
+                for(i in this.rules) {
+                    find = this.rules[i]['find'];
+                    if(find.test(player)) {
+                        replace = this.rules[i]['replace'];
+                        if('function' === typeof this.rules[i]['preHandle']) {
+                            this.rules[i]['preHandle'].bind(this, elem, find, replace, player)();
+                        }else{
+                            this.reallyReplace.bind(this, elem, find, replace)();
+                        }
+                        break;
+                    }
+                }
+            },
+            reallyReplace: function(elem, find, replace) {
+                elem.data && (elem.data = elem.data.replace(find, replace)) || elem.src && ((elem.src = elem.src.replace(find, replace)) && (elem.style.display = 'block'));
+                var b = elem.querySelector("param[name='movie']");
+                this.reloadPlugin(elem);
+            },
+            reloadPlugin: function(elem) {
+                var nextSibling = elem.nextSibling;
+                var parentNode = elem.parentNode;
+                parentNode.removeChild(elem);
+                var newElem = elem.cloneNode(true);
+                this.done.push(newElem);
+                if(nextSibling) {
+                    parentNode.insertBefore(newElem, nextSibling);
+                } else {
+                    parentNode.appendChild(newElem);
+                }
+            },
+            init: function() {
+                var handler = this.animationsHandler.bind(this);
+                document.body.addEventListener('webkitAnimationStart', handler, false);
+                document.body.addEventListener('msAnimationStart', handler, false);
+                document.body.addEventListener('oAnimationStart', handler, false);
+                document.body.addEventListener('animationstart', handler, false);
+                this.addAnimations();
+            }
+        };
+        new A().init();
+    })();
+}
+// 20140730
+(function cnbeta() {
+    if (document.URL.indexOf('cnbeta.com') >= 0) {
+        var elms = document.body.querySelectorAll("p>embed");
+        Array.prototype.forEach.call(elms, function(elm) {
+            elm.style.marginLeft = "0px";
+        });
+    }
+})();
+//baidu
+if(document.URL.indexOf('www.baidu.com') >= 0){
+    if(document && document.getElementsByTagName && document.getElementById && document.body){
+        var aa = function(){
+            var all = document.body.querySelectorAll("#content_left div,#content_left table");
+            for(var i = 0; i < all.length; i++){
+                if(/display:\s?(table|block)\s!important/.test(all[i].getAttribute("style"))){all[i].style.display= "none";all[i].style.visibility='hidden';}
+            }
+            all = document.body.querySelectorAll('.result.c-container[id="1"]');
+            //if(all.length == 1) return;
+            for(var i = 0; i < all.length; i++){
+                if(all[i].innerHTML && all[i].innerHTML.indexOf('广告')>-1){
+                    all[i].style.display= "none";all[i].style.visibility='hidden';
+                }
+            }
+        }
+        aa();
+        document.getElementById('wrapper_wrapper').addEventListener('DOMSubtreeModified',aa)
+    };
+}
+// 20140922
+(function kill_360() {
+    if (document.URL.indexOf('so.com') >= 0) {
+        document.getElementById("e_idea_pp").style.display = none;
+    }
+})();
+if (document.URL.indexOf("tv.sohu.com") >= 0){
+    if (document.cookie.indexOf("fee_status=true")==-1){document.cookie='fee_status=true'};
+}
+if (document.URL.indexOf("56.com") >= 0){
+    if (document.cookie.indexOf("fee_status=true")==-1){document.cookie='fee_status=true'};
+}
+if (document.URL.indexOf("iqiyi.com") >= 0){
+    if (document.cookie.indexOf("player_forcedType=h5_VOD")==-1){
+        document.cookie='player_forcedType=h5_VOD'
+        if(localStorage.reloadTime && Date.now() - parseInt(localStorage.reloadTime)<60000){
+            console.log('no reload')
+        }else{
+            location.reload()
+            localStorage.reloadTime = Date.now();
+        }
+    }
+}
+</script><style type="text/css">object,embed{                -webkit-animation-duration:.001s;-webkit-animation-name:playerInserted;                -ms-animation-duration:.001s;-ms-animation-name:playerInserted;                -o-animation-duration:.001s;-o-animation-name:playerInserted;                animation-duration:.001s;animation-name:playerInserted;}                @-webkit-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-ms-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @-o-keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}                @keyframes playerInserted{from{opacity:0.99;}to{opacity:1;}}</style></head>
+<body>
+
+<canvas class="canvas canvas-pattern js-canvas" width="750" height="750"></canvas>
+<canvas class="canvas js-duplicate" width="750" height="750"></canvas>
+
+<script type="text/javascript">
+const canvas = document.querySelector('.js-canvas');
+const ctx = canvas.getContext('2d');
+
+const canvas2 = document.querySelector('.js-duplicate');
+const ctx2 = canvas2.getContext('2d');
+
+const dim = Math.min(window.innerWidth, window.innerHeight) * 0.95;
+const w = dim;
+const h = dim;
+const midX = w >> 1;
+const midY = h >> 1;
+
+const PI = Math.PI;
+const TO_RADIAN = PI / 180;
+
+const maxDepth = 5;
+const maxSpread = 90 * TO_RADIAN;
+
+let autoAnimate = true;
+let divergeAt = 0.5;
+let spread = 45 * TO_RADIAN;
+let tick = 0;
+
+let autoSpeed = 0.004;
+let autoTick = 0;
+
+canvas.width = canvas2.width = w;
+canvas.height = canvas2.height = h;
+
+class Branch {
+  constructor(position = {x : 0, y: 0}, length = 100, divergeAt = 0.5, angle = 0, depth = 0, spread = 45 * TO_RADIAN) {
+    this.position = position;
+    this.length = length;
+    this.divergeAt = divergeAt;
+    this.angle = angle;
+    this.depth = depth;
+
+    this.color = '#000';
+    this.spread = spread;
+    this.branches = [];
+
+    this.grow();
+  }
+
+  grow() {
+    if (!this.canBranch) {
+      return;
+    }
+
+    this.branches = [];
+
+    const nextLength = this.length * 0.75;
+    const nextDepth = this.depth + 1;
+
+    this.branches.push(
+      new Branch(
+        this.growPosition,
+        nextLength,
+        this.divergeAt,
+        this.angle + this.spread,
+        nextDepth,
+        this.spread
+      ),
+      new Branch(
+        this.growPosition,
+        nextLength,
+        this.divergeAt,
+        this.angle - this.spread,
+        nextDepth,
+        this.spread
+      )
+    );
+  }
+
+  update(spread, divergeAt) {
+    this.spread = spread;
+    this.divergeAt = divergeAt;
+
+    this.grow();
+  }
+
+  get growPosition() {
+    const dl = this.length * this.divergeAt;
+
+    return {
+      x: this.position.x + (Math.cos(this.angle) * dl),
+      y: this.position.y + (Math.sin(this.angle) * dl),
+    };
+  }
+
+  get canBranch() {
+    return this.depth < maxDepth;
+  }
+}
+
+const rootBranch = new Branch(
+  { x: midX, y: midY },
+  midY * 0.5,
+  divergeAt,
+  -90 * TO_RADIAN,
+  0,
+  spread
+);
+
+const drawBranch = (branch, phase) => {
+  const h = ~~(200 + (160 * phase));
+  const l = 50 + ~~(((branch.depth / (maxDepth + 1))) * 50);
+
+  const endX = branch.length;
+  const endY = 0;
+  const r = 2;
+
+  ctx.save();
+
+  ctx.strokeStyle = `hsl(${h}, 100%, ${l}%)`;
+  ctx.translate(branch.position.x, branch.position.y);
+  ctx.rotate(branch.angle);
+
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+  ctx.closePath();
+
+  ctx.beginPath();
+  ctx.fillStyle = `hsl(${h}, 100%, 50%)`;
+  ctx.arc(endX, endY, r, 0, PI * 2, false);
+  ctx.fill();
+  ctx.closePath();
+
+  ctx.restore();
+
+  branch.branches.forEach((b) => {
+    drawBranch(b, phase);
+  });
+};
+
+const map = (value, start1, stop1, start2, stop2) => ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
+
+const clear = () => {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx2.clearRect(0, 0, ctx2.canvas.width, ctx2.canvas.height);
+};
+
+const loop = () => {
+  let phase = rootBranch.spread / maxSpread;
+
+  clear(phase);
+
+  if (autoAnimate) {
+    phase = map(Math.sin(autoTick), -1, 1, 0, 1);
+
+    spread = phase * maxSpread;
+    divergeAt = map(Math.sin(autoTick), -1, 1, 0, 0.5);
+
+    autoTick += autoSpeed;
+  }
+
+  rootBranch.update(spread, divergeAt);
+
+  drawBranch(rootBranch, phase);
+
+  const numSegments = 12;
+  const angleInc = PI * 2 / numSegments;
+  let angle = tick;
+
+  for (let i = 0; i < numSegments; i++) {
+    ctx2.save();
+    ctx2.translate(midX, midY);
+    ctx2.rotate(angle);
+    ctx2.drawImage(canvas, -w / 2, -h / 2);
+    ctx2.restore();
+    angle += angleInc;
+  }
+
+  tick += 0.002;
+
+  requestAnimationFrame(loop);
+};
+
+const onPointerMove = (e) => {
+  if (autoAnimate) {
+    return;
+  }
+
+  const target = (e.touches && e.touches.length) ? e.touches[0] : e;
+  const { clientX: x, clientY: y } = target;
+
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  spread = (x / width) * maxSpread;
+  divergeAt = y / height;
+};
+
+document.body.addEventListener('mousemove', onPointerMove);
+document.body.addEventListener('touchmove', onPointerMove);
+
+document.addEventListener('mouseenter', () => {
+  autoAnimate = false;
+});
+
+document.addEventListener('mouseleave', () => {
+  autoAnimate = true;
+});
+
+loop();
+</script>
+
+
+
+
+</body></html>
